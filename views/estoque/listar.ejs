@@ -1,0 +1,114 @@
+<style>
+    .estoque-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+    }
+
+    .estoque-header h1 {
+        margin-bottom: 4px;
+        font-size: 2rem;
+        font-weight: 600;
+    }
+
+    .estoque-subtitle {
+        margin: 0;
+        color: #6c757d;
+    }
+
+    .estoque-counter {
+        padding: 10px 14px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border: 1px solid #dee2e6;
+        min-width: 150px;
+        text-align: center;
+    }
+
+    .estoque-counter strong {
+        display: block;
+        font-size: 1.2rem;
+        line-height: 1;
+    }
+
+    .estoque-counter span {
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+
+    .estoque-table th {
+        white-space: nowrap;
+    }
+
+    .estoque-qty {
+        text-align: right;
+        font-weight: 600;
+    }
+
+    .estoque-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    @media (max-width: 768px) {
+        .estoque-header h1 {
+            font-size: 1.6rem;
+        }
+    }
+</style>
+
+<div>
+    <div class="estoque-header">
+        <div>
+            <h1>Lista de Estoque</h1>
+            <p class="estoque-subtitle">Acompanhe entradas e saídas de produtos.</p>
+        </div>
+        <div class="estoque-counter">
+            <strong><%= estoque.length %></strong>
+            <span>movimentações registradas</span>
+        </div>
+    </div>
+
+    <div class="table-responsive" style="margin-top: 8px;">
+        <table class="table table-striped table-hover estoque-table">
+            <thead class="thead-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Produto</th>
+                    <th>Nome</th>
+                    <th>Tipo</th>
+                    <th class="text-right">Quantidade de Entrada/Saída</th>
+                    <th class="text-right">Quantidade Restante</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (estoque.length === 0) { %>
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">Nenhuma movimentação de estoque cadastrada.</td>
+                    </tr>
+                <% } %>
+
+                <% estoque.forEach(item => {
+                    const tipoOriginal = (item.tipo || '').toString();
+                    const tipoNormalizado = tipoOriginal.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+                    const tipoClasse = tipoNormalizado.includes('entrada') ? 'badge-success' : 'badge-warning';
+                %>
+                    <tr>
+                        <td><%= item.id %></td>
+                        <td>#<%= item.produtoId %></td>
+                        <td><%= item.produtoNome %></td>
+                        <td>
+                            <span class="badge <%= tipoClasse %>"><%= item.tipo %></span>
+                        </td>
+                        <td class="estoque-qty"><%= item.quant %></td>
+                        <td class="estoque-qty"><%= item.produtoQuantidade %></td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</div>
