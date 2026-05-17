@@ -79,6 +79,7 @@
                 <tr>
                     <th>ID</th>
                     <th>Produto</th>
+                    <th>Lote</th>
                     <th>Nome</th>
                     <th>Tipo</th>
                     <th class="text-right">Quantidade de Entrada/Saída</th>
@@ -88,7 +89,7 @@
             <tbody>
                 <% if (estoque.length === 0) { %>
                     <tr>
-                        <td colspan="6" class="text-center text-muted py-4">Nenhuma movimentação de estoque cadastrada.</td>
+                        <td colspan="7" class="text-center text-muted py-4">Nenhuma movimentação de estoque cadastrada.</td>
                     </tr>
                 <% } %>
 
@@ -100,6 +101,7 @@
                     <tr>
                         <td><%= item.id %></td>
                         <td>#<%= item.produtoId %></td>
+                        <td><%= item.loteNome || '-' %></td>
                         <td><%= item.produtoNome %></td>
                         <td>
                             <span class="badge <%= tipoClasse %>"><%= item.tipo %></span>

@@ -9,6 +9,7 @@ class EstoqueModel{
     #produtoNome
     #produtoQuantidade
     #itensId
+    #loteNome
 
     get id(){
         return this.#id
@@ -66,7 +67,15 @@ class EstoqueModel{
         this.#itensId = value
     }
 
-    constructor(id, quant, tipo, produtoId, itensId, produtoNome, produtoQuantidade){
+    get loteNome(){
+        return this.#loteNome
+    }
+
+    set loteNome(value){
+        this.#loteNome = value
+    }
+
+    constructor(id, quant, tipo, produtoId, itensId, produtoNome, produtoQuantidade, loteNome){
         this.#id = id
         this.#quant = quant
         this.#tipo = tipo
@@ -74,6 +83,7 @@ class EstoqueModel{
         this.#itensId = itensId
         this.#produtoNome = produtoNome
         this.#produtoQuantidade = produtoQuantidade
+        this.#loteNome = loteNome
     }
 
     async gravar(){
@@ -89,7 +99,7 @@ class EstoqueModel{
     }
 
     async listarEstoque(){
-        let sql = "select * from movi_estoque me inner join tb_produto p on p.prd_id = me.prod_id order by movi_id desc"
+        let sql = "select me.*, p.prd_nome, p.prd_quantidade, l.lote_nome from movi_estoque me inner join tb_produto p on p.prd_id = me.prod_id left join tb_lote l on l.lote_id = me.itens_id order by movi_id desc"
 
         let rows = await banco.ExecutaComando(sql)
 
@@ -103,7 +113,8 @@ class EstoqueModel{
                 row.prod_id,
                 row.itens_id,
                 row.prd_nome,
-                row.prd_quantidade
+                row.prd_quantidade,
+                row.lote_nome
             )
             lista.push(estoque)
         })

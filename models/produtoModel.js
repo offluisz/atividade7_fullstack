@@ -10,6 +10,7 @@ class ProdutoModel {
     #produtoQuantidade;
     #produtoValor;
     #produtoImagem;
+    #produtoStatus;
     #categoriaId;
     #categoriaNome;
     #marcaId;
@@ -25,10 +26,11 @@ class ProdutoModel {
     get marcaNome() { return this.#marcaNome; } set marcaNome(marcaNome) {this.#marcaNome = marcaNome;}
     get produtoImagem() { return this.#produtoImagem; } set produtoImagem(produtoImagem) {this.#produtoImagem = produtoImagem;}
     get produtoValor() { return this.#produtoValor; } set produtoValor(produtoValor) {this.#produtoValor = produtoValor;}
+    get produtoStatus() { return this.#produtoStatus; } set produtoStatus(produtoStatus) {this.#produtoStatus = produtoStatus;}
 
 
 
-    constructor(produtoId, produtoCodigo, produtoNome, produtoQuantidade, categoriaId, marcaId, categoriaNome, marcaNome, produtoImagem, produtoValor) {
+    constructor(produtoId, produtoCodigo, produtoNome, produtoQuantidade, categoriaId, marcaId, categoriaNome, marcaNome, produtoImagem, produtoValor, produtoStatus) {
         this.#produtoId = produtoId
         this.#produtoCodigo = produtoCodigo
         this.#produtoNome = produtoNome
@@ -39,10 +41,11 @@ class ProdutoModel {
         this.#marcaNome = marcaNome;
         this.#produtoImagem = produtoImagem;
         this.#produtoValor = produtoValor;
+        this.#produtoStatus = produtoStatus;
     }
 
     async excluir(codigo){
-        let sql = "delete from tb_produto where prd_id = ?"
+        let sql = "update tb_produto set prd_status = 'inativo' where prd_id = ?";
         let valores = [codigo];
 
         var result = await conexao.ExecutaComandoNonQuery(sql, valores);
@@ -52,9 +55,9 @@ class ProdutoModel {
 
     async gravar() {
         if(this.#produtoId == 0){
-            let sql = "insert into tb_produto (prd_cod, prd_nome, prd_quantidade, cat_id, mar_id, prd_imagem, prd_valor) values (?, ?, ?, ?, ?, ?, ?)";
+            let sql = "insert into tb_produto (prd_cod, prd_nome, prd_quantidade, cat_id, mar_id, prd_imagem, prd_valor, prd_status) values (?, ?, ?, ?, ?, ?, ?, ?)";
 
-            let valores = [this.#produtoCodigo, this.#produtoNome, this.#produtoQuantidade, this.#categoriaId, this.#marcaId, this.#produtoImagem, this.#produtoValor];
+            let valores = [this.#produtoCodigo, this.#produtoNome, this.#produtoQuantidade, this.#categoriaId, this.#marcaId, this.#produtoImagem, this.#produtoValor, this.#produtoStatus];
 
             let result = await conexao.ExecutaComandoLastInserted(sql, valores);
             this.#produtoId = result
@@ -63,12 +66,11 @@ class ProdutoModel {
         }
         else{
             //alterar
-            let sql = "update tb_produto set prd_cod = ?, prd_nome =?, prd_quantidade= ?, cat_id = ?, mar_id = ?, prd_imagem = ?, prd_valor = ? where prd_id = ?";
-
+            let sql = "update tb_produto set prd_cod = ?, prd_nome =?, prd_quantidade= ?, cat_id = ?, mar_id = ?, prd_imagem = ?, prd_valor = ?, prd_status = ? where prd_id = ?";
             let valores = [this.#produtoCodigo, this.#produtoNome, 
                 this.#produtoQuantidade, 
                 this.#categoriaId, 
-                this.#marcaId, this.#produtoImagem, this.produtoValor, this.#produtoId];
+                this.#marcaId, this.#produtoImagem, this.#produtoValor, this.#produtoStatus, this.#produtoId];
 
             return await conexao.ExecutaComandoNonQuery(sql, valores) > 0;
         }
@@ -97,7 +99,7 @@ class ProdutoModel {
             
             produto = new ProdutoModel(row['prd_id'], 
             row['prd_cod'], row['prd_nome'], row['prd_quantidade'], 
-            row['cat_id'], row['mar_id'], "", "", imagem, row["prd_valor"]);
+            row['cat_id'], row['mar_id'], "", "", imagem, row["prd_valor"], row["prd_status"]);
 
         }
 
@@ -106,7 +108,7 @@ class ProdutoModel {
 
     async listarProdutos() {
 
-        let sql = 'select * from tb_produto p inner join tb_categoria c on p.cat_id = c.cat_id inner join tb_marca m on p.mar_id = m.mar_id order by prd_id';
+        let sql = 'select * from tb_produto p inner join tb_categoria c on p.cat_id = c.cat_id inner join tb_marca m on p.mar_id = m.mar_id where prd_status = "ativo" order by prd_id';
         
         var rows = await conexao.ExecutaComando(sql);
 
@@ -137,7 +139,7 @@ class ProdutoModel {
 
                 listaRetorno.push(new ProdutoModel(row['prd_id'], 
                 row['prd_cod'], row['prd_nome'], row['prd_quantidade'], 
-                row['cat_id'], row['mar_id'], row['cat_nome'], row['mar_nome'], imagem, row["prd_valor"]));
+                row['cat_id'], row['mar_id'], row['cat_nome'], row['mar_nome'], imagem, row["prd_valor"], row["prd_status"]));
             }
         }
 
@@ -149,7 +151,8 @@ class ProdutoModel {
             id: this.#produtoId,
             nome: this.#produtoNome,
             preco: this.#produtoValor,
-            imagem: this.#produtoImagem
+            imagem: this.#produtoImagem,
+            status: this.#produtoStatus
         }
     }
 

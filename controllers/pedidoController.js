@@ -2,6 +2,7 @@ const PedidoItemModel = require("../models/pedidoItemModel");
 const PedidoModel = require("../models/pedidoModel");
 const ProdutoModel = require("../models/produtoModel");
 const EstoqueModel = require('../models/estoqueModel')
+const LoteModel = require('../models/loteModel')
 
 
 class PedidoController {
@@ -33,7 +34,8 @@ class PedidoController {
                     pedido.pedidoValorTotal += item.pedidoItemValorTotal;
 
                     //atualizar o estoque
-                    let estoque = new EstoqueModel(0, item.pedidoItemQuantidade, "Saída", produto.produtoId, item.pedidoId);
+                    let lote = await new LoteModel().buscarPorProdutoId(produto.produtoId);
+                    let estoque = new EstoqueModel(0, item.pedidoItemQuantidade, "Saída", produto.produtoId, lote ? lote.id : null);
                     await estoque.gravar();
                     //atualizar a quantidade do produto
                     produto.produtoQuantidade -= item.pedidoItemQuantidade;
