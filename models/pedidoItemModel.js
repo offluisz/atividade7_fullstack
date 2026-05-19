@@ -125,7 +125,37 @@ class PedidoItemModel {
 
         for(let row of rows){
             let item = new PedidoItemModel(
+                0,
                 row.ped_id,
+                0,
+                row.pit_quantidade,
+                row.pit_valorunidade,
+                row.pit_valortotal,
+                row.prd_nome,
+                row.ped_valortotal
+            )
+            lista.push(item);
+        }
+        return lista;
+    }
+
+    async listarPedidosId(pedidoId){
+        let sql = "select p.ped_id, p.ped_valortotal, pr.prd_nome, \
+                    i.pit_quantidade , i.pit_valorunidade, i.pit_valortotal \
+                    from tb_pedido p \
+                        inner join tb_pedidoitens i on p.ped_id = i.ped_id \
+                        inner join tb_produto pr on i.prd_id = pr.prd_id \
+                    where p.ped_id = ?;";
+
+        let rows = await banco.ExecutaComando(sql, [pedidoId]);
+
+        let lista = [];
+
+        for(let row of rows){
+            let item = new PedidoItemModel(
+                0,
+                row.ped_id,
+                0,
                 row.pit_quantidade,
                 row.pit_valorunidade,
                 row.pit_valortotal,

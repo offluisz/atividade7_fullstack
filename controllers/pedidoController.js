@@ -17,6 +17,13 @@ class PedidoController {
         res.send(lista);
     }
 
+    async listarPedidosId(req, res) {
+        let pedidoId = req.params.id;
+        let item = new PedidoItemModel();
+        let lista = await item.listarPedidosId(pedidoId);
+        res.send(lista);
+    }
+
     async gravar(req, res) {
         console.log(req.body);
         let ok = false;
