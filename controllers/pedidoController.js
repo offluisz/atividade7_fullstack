@@ -7,6 +7,16 @@ const LoteModel = require('../models/loteModel')
 
 class PedidoController {
 
+    async pedidosView(req, res){
+        res.render('pedido/index');
+    }
+
+    async listarPedidos(req, res) {
+        let item = new PedidoItemModel();
+        let lista = await item.listarPedidos();
+        res.send(lista);
+    }
+
     async gravar(req, res) {
         console.log(req.body);
         let ok = false;
