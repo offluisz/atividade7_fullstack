@@ -14,7 +14,10 @@ class LoginController {
             usuario = await usuario.obterPorEmailSenha(req.body.email, req.body.password);
             if(usuario != null) {
                 res.cookie("usuarioLogado", usuario.usuarioId);
-                res.redirect("/");
+                if(usuario.perfilId == 1 || usuario.perfilId == 2){
+                    return res.redirect("/estoque");
+                }
+                return res.redirect("/");
             }
             else {
                 msg = "Usuário/Senha incorretos!";
