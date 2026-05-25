@@ -2,7 +2,6 @@ const PedidoItemModel = require("../models/pedidoItemModel");
 const PedidoModel = require("../models/pedidoModel");
 const ProdutoModel = require("../models/produtoModel");
 const EstoqueModel = require('../models/estoqueModel')
-const LoteModel = require('../models/loteModel')
 
 
 class PedidoController {
@@ -14,13 +13,6 @@ class PedidoController {
     async listarPedidos(req, res) {
         let item = new PedidoItemModel();
         let lista = await item.listarPedidos();
-        res.send(lista);
-    }
-
-    async listarPedidosId(req, res) {
-        let pedidoId = req.params.id;
-        let item = new PedidoItemModel();
-        let lista = await item.listarPedidosId(pedidoId);
         res.send(lista);
     }
 
@@ -47,12 +39,11 @@ class PedidoController {
                     item.pedidoItemQuantidade = req.body[i].quantidade;
                     item.pedidoItemValor = produto.produtoValor;
                     item.pedidoItemValorTotal = item.pedidoItemQuantidade * item.pedidoItemValor;
-                    await item.gravar();
+                    let pedidoItemId = await item.gravar();
                     pedido.pedidoValorTotal += item.pedidoItemValorTotal;
 
                     //atualizar o estoque
-                    let lote = await new LoteModel().buscarPorProdutoId(produto.produtoId);
-                    let estoque = new EstoqueModel(0, item.pedidoItemQuantidade, "Saída", produto.produtoId, lote ? lote.id : null);
+                    let estoque = new EstoqueModel(0, item.pedidoItemQuantidade, "Saída", produto.produtoId, pedidoItemId, null);
                     await estoque.gravar();
                     //atualizar a quantidade do produto
                     produto.produtoQuantidade -= item.pedidoItemQuantidade;

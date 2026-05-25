@@ -49,7 +49,9 @@ class ProdutoController {
                     estoque.quant = produto.produtoQuantidade;
                     estoque.tipo = "Entrada";
                     estoque.produtoId = produto.produtoId;
-                    estoque.itensId = loteId;
+                    // Para movimentos de entrada, não existe item de pedido relacionado.
+                    estoque.itensId = null;
+                    estoque.loteId = loteId;
                 await estoque.gravar()
             }
         }
